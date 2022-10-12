@@ -15,25 +15,28 @@ import Head from 'next/head';
 import Layout from '../../components/layout';
 import { AdventureClient } from '../../lib/adventures';
 import AdventureCard from '../../components/AdventureCard';
-import getPages from '../../lib/getPages';
 
-const { NEXT_PUBLIC_AEM_HOST, NEXT_PUBLIC_AEM_ROOT } = process.env;
+const { NEXT_PUBLIC_AEM_HOST } = process.env;
 
-export default function Adventures({ adventures, pages }) {
+export default function Adventures({ adventures }) {
   return (
-    <Layout pages={pages}>
+    <Layout>
       <Head>
         <title>Adventures</title>
       </Head>
-      <section className="">
+      <section className=''>
         <div className="bg-white">
-          <div className="max-w-2xl px-4 py-10 mx-auto sm:py-16 sm:px-6 lg:max-w-7xl lg:px-8">
-            <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              Your next adventures can be one of these...
-            </h2>
-            <div className="grid grid-cols-1 mt-6 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-              {adventures.map(
-                ({ slug, title, price, tripLength, primaryImage }) => {
+          <div className="max-w-2xl mx-auto py-10 px-4 sm:py-16 sm:px-6 lg:max-w-7xl lg:px-8">
+            <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">Your next adventures can be one of these...</h2>
+            <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+            {adventures.map(
+                ({
+                  slug,
+                  title,
+                  price,
+                  tripLength,
+                  primaryImage,
+                }) => {
                   return (
                     <AdventureCard
                       key={slug}
@@ -58,11 +61,9 @@ export async function getServerSideProps() {
   const client = AdventureClient.fromEnv();
   const res = await client.getAllAdventures();
   const adventures = res?.data?.adventureList?.items;
-  const pages = await getPages(NEXT_PUBLIC_AEM_ROOT);
   return {
     props: {
       adventures,
-      pages,
     },
   };
 }

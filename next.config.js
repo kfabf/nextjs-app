@@ -11,7 +11,6 @@
  *
  */
 
-const path = require('path');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 
 module.exports = {
@@ -24,20 +23,18 @@ module.exports = {
                     key: 'Access-Control-Allow-Origin',
                     value: '*'
                 } ]
+            }
+        ]
+    },
+    async rewrites() {
+        return [
+            {
+                source: '/content/:path*',
+                destination: '/api/proxy/:path*'
             },
             {
-                source: '/asset-manifest.json',
-                headers: [ {
-                    key: 'Access-Control-Allow-Origin',
-                    value: '*'
-                } ]
-            },
-            {
-                source: '/_next/:path*',
-                headers: [ {
-                    key: 'Access-Control-Allow-Origin',
-                    value: '*'
-                } ]
+                source: '/.model.json',
+                destination: '/api/proxy/.model.json'
             }
         ]
     },
@@ -47,9 +44,7 @@ module.exports = {
             transform: assets => {
                 const entrypoints = [];
                 for (let file in assets) {
-                    if (file.includes('server/')) {
-                        delete assets[file];
-                    } else if (assets[file].endsWith('.js') || assets[file].endsWith('.css')) {
+                    if (assets[file].endsWith('.js') || assets[file].endsWith('.css')) {
                         entrypoints.push(assets[file]);
                     }
                 }
@@ -61,8 +56,5 @@ module.exports = {
         }));
 
         return config;
-    },
-    sassOptions: {
-        includePaths: [path.join(__dirname, 'styles')],
-    },
+    }
 };

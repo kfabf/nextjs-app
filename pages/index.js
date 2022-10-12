@@ -13,27 +13,23 @@
 
 import Head from 'next/head';
 import Layout from '../components/layout';
-import {
-  ResponsiveGrid,
-  fetchModel,
-} from '@adobe/aem-react-editable-components';
-import getPages from '../lib/getPages';
+import { ResponsiveGrid, fetchModel } from '@adobe/aem-react-editable-components';
 
-const { NEXT_PUBLIC_AEM_HOST, NEXT_PUBLIC_AEM_ROOT } = process.env;
+const NEXT_PUBLIC_AEM_PATH = process.env.NEXT_PUBLIC_AEM_PATH;
+const NEXT_PUBLIC_AEM_HOST = process.env.NEXT_PUBLIC_AEM_HOST;
 
-export default function Home({ model, pagePath, pages }) {
+export default function Home({ model }) {
   return (
-    <Layout pages={pages}>
+    <Layout>
       <Head>
         <title>{model.title}</title>
       </Head>
       <section>
-        <div className="px-2 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-2 lg:py-6">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-2 lg:py-6">
           <ResponsiveGrid
-            key={pagePath}
-            model={model}
-            pagePath={pagePath}
-            itemPath="root/responsivegrid"
+            model = {model}
+            pagePath={NEXT_PUBLIC_AEM_PATH}
+            itemPath='root/responsivegrid'
           />
         </div>
       </section>
@@ -41,27 +37,20 @@ export default function Home({ model, pagePath, pages }) {
   );
 }
 
-export async function getServerSideProps(context) {
-  const pagePath = `/content/wknd-app/us/en/${
-    context.query.page?.join('/') || 'home'
-  }`;
-
-  const pages = await getPages(NEXT_PUBLIC_AEM_ROOT);
+export async function getServerSideProps() {
   const model = await fetchModel({
-    pagePath,
+    pagePath: NEXT_PUBLIC_AEM_PATH,
     itemPath: 'root/responsivegrid',
     host: NEXT_PUBLIC_AEM_HOST,
     options: {
       headers: {
-        Authorization: 'Basic YWRtaW46YWRtaW4=',
-      },
-    },
+        Authorization: 'Basic YWRtaW46YWRtaW4='
+      }
+    }
   });
   return {
     props: {
-      model,
-      pagePath,
-      pages,
-    },
+      model
+    }
   };
 }

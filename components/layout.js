@@ -13,29 +13,36 @@
 
 import Head from 'next/head';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { Disclosure } from '@headlessui/react';
 import { MenuIcon, XIcon } from '@heroicons/react/outline';
 
-const { NEXT_PUBLIC_URL } = process.env;
+const { NEXT_PUBLIC_URL} = process.env;
 
 export const siteTitle = 'WKND';
+
+const navigation = [
+  { name: 'Home', href: '/'},
+  { name: 'Adventures', href: '/adventures'},
+];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Layout({ children, pages }) {
+export default function Layout({ children }) {
   const router = useRouter();
-  const isCurrentPage = (currPath) => {
-    const path = router.asPath === '/' ? '/home' : router.asPath;
-    return path.indexOf(currPath) === 0;
+  const isCurrentPage = (path) => {
+    return path === '/' ? router.pathname === '/' : router.pathname.indexOf(path) === 0
   };
   return (
-    <>
+    <div className="min-h-full">
       <Head>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="description" content="AEM WKND built in Next.js" />
+        <meta
+          name="description"
+          content="AEM WKND built in Next.js"
+        />
         <meta
           property="og:image"
           content={`${NEXT_PUBLIC_URL}/wknd-logo-dk.svg`}
@@ -47,75 +54,73 @@ export default function Layout({ children, pages }) {
       <Disclosure as="nav" className="bg-gray-100">
         {({ open }) => (
           <>
-            <div className="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
               <div className="relative flex items-center justify-between h-16">
                 <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                   {/* Mobile menu button*/}
-                  <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-800 rounded-md hover:text-gray-700 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-800 hover:text-gray-700 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
-                      <XIcon className="block w-6 h-6" aria-hidden="true" />
+                      <XIcon className="block h-6 w-6" aria-hidden="true" />
                     ) : (
-                      <MenuIcon className="block w-6 h-6" aria-hidden="true" />
+                      <MenuIcon className="block h-6 w-6" aria-hidden="true" />
                     )}
                   </Disclosure.Button>
                 </div>
-
-                <div className="flex items-center justify-center flex-1 sm:items-stretch sm:justify-start">
-                  <div className="flex items-center flex-shrink-0">
-                    <a href="/">
+                
+                <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                  <div className="flex-shrink-0 flex items-center">
+                    <a href='/'>
                       <img
-                        className="block w-auto h-8 lg:hidden"
-                        src={NEXT_PUBLIC_URL + '/wknd-logo-dk.svg'}
+                        className="block lg:hidden h-8 w-auto"
+                        src={ NEXT_PUBLIC_URL + "/wknd-logo-dk.svg" }
                         alt="WKND"
                       />
                       <img
-                        className="hidden w-auto h-8 lg:block"
-                        src={NEXT_PUBLIC_URL + '/wknd-logo-dk.svg'}
+                        className="hidden lg:block h-8 w-auto"
+                        src={ NEXT_PUBLIC_URL + "/wknd-logo-dk.svg" }
                         alt="WKND"
                       />
                     </a>
                   </div>
                   <div className="hidden sm:block sm:ml-6">
                     <div className="flex space-x-4">
-                      {pages.map((item) => (
-                        <Link key={item.name} href={item.href}>
+                      {navigation.map((item) => (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                        >
                           <a
-                            aria-current={
-                              isCurrentPage(item.href) ? 'page' : undefined
-                            }
+                            aria-current={isCurrentPage(item.href) ? 'page' : undefined}
                             className={classNames(
-                              isCurrentPage(item.href)
-                                ? 'bg-yellow-300 text-gray-700'
-                                : 'text-gray-800 hover:bg-yellow-200 hover:text-gray-700',
+                              isCurrentPage(item.href) ? 'bg-yellow-300 text-gray-700' : 'text-gray-800 hover:bg-yellow-200 hover:text-gray-700',
                               'px-3 py-2 rounded-md text-sm font-medium'
-                            )}>
-                            {item.name}
+                            )}
+                          >
+                          {item.name}
                           </a>
                         </Link>
                       ))}
                     </div>
                   </div>
                 </div>
+                
               </div>
             </div>
 
             <Disclosure.Panel className="sm:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1">
-                {pages.map((item) => (
+                {navigation.map((item) => (
                   <Disclosure.Button
                     key={item.name}
                     as="a"
                     href={item.href}
                     className={classNames(
-                      isCurrentPage(item.href)
-                        ? 'bg-yellow-300 text-gray-700'
-                        : 'text-gray-800 hover:bg-yellow-200 hover:text-gray-700',
+                      isCurrentPage(item.href) ? 'bg-yellow-300 text-gray-700' : 'text-gray-800 hover:bg-yellow-200 hover:text-gray-700',
                       'block px-3 py-2 rounded-md text-base font-medium'
                     )}
-                    aria-current={
-                      isCurrentPage(item.href) ? 'page' : undefined
-                    }>
+                    aria-current={isCurrentPage(item.href) ? 'page' : undefined}
+                  >
                     {item.name}
                   </Disclosure.Button>
                 ))}
@@ -125,15 +130,12 @@ export default function Layout({ children, pages }) {
         )}
       </Disclosure>
       <main>{children}</main>
-      <footer className="text-center bg-gray-200 lg:text-left">
-        <div className="p-4 text-center text-gray-700">
+      <footer className="bg-gray-200 text-center lg:text-left">
+        <div className="text-gray-700 text-center p-4">
           © 2022 Copyright:
-          <a className="text-gray-800" href="https://wknd.site/">
-            {' '}
-            WKND Site
-          </a>
+          <a className="text-gray-800" href="https://wknd.site/"> WKND Site</a>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
